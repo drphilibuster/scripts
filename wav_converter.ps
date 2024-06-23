@@ -1,0 +1,27 @@
+# Define the source directory where the original WAV files are located
+$sourceDir = Get-Location
+
+# Define the target directory where the converted files will be saved
+$targetDir = "$sourceDir\24bit_wav_versions"
+
+# Create the target directory if it doesn't exist
+if (-not (Test-Path -Path $targetDir)) {
+    New-Item -ItemType Directory -Path $targetDir
+}
+
+# Get all WAV files in the source directory
+$wavFiles = Get-ChildItem -Path $sourceDir -Filter "*.wav"
+
+# Loop through each WAV file and convert it using FFmpeg
+foreach ($file in $wavFiles) {
+    # Define the input file path
+    $inputFilePath = $file.FullName
+
+    # Define the output file path in the target directory
+    $outputFilePath = "$targetDir\$($file.Name)"
+
+    # Run the FFmpeg command to convert the file to 24-bit WAV
+    ffmpeg -i $inputFilePath -c:a pcm_s24le $outputFilePath
+}
+
+Write-Host "Conversion complete. Files are saved in $targetDir"
